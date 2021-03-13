@@ -1,0 +1,8 @@
+db:
+  host: db
+  port: 3306
+  user: dev
+  password: dev
+  database: ps-store
+  encoding: utf8mb4
+  wait-timeout: 172800

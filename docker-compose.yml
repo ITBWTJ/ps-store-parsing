@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: dev
+      MYSQL_DATABASE: ps-store
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: dev
+    ports:
+      - "3306:3306"
+  api:
+    build:
+      context: ./
+      dockerfile: ./docker/php/Dockerfile
+    ports:
+      - "9501:9501"
+      - "9500:9500"
+    volumes:
+      - ./src:/var/www/ps-store
+    command: bash -c "pm2-runtime server.yaml --env development --update-env"
