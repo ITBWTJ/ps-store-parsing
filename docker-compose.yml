@@ -18,5 +18,6 @@ services:
       - "9501:9501"
       - "9500:9500"
     volumes:
-      - ./src:/var/www/ps-store
-    command: bash -c "pm2-runtime server.yaml --env development --update-env"
+      - ./api:/var/www/ps-store
+    working_dir: /var/www/ps-store
+    command: bash -c "composer install && composer dump-autoload && pm2-runtime src/server.yaml --env development --update-env"

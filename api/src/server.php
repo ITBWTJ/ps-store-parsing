@@ -1,12 +1,14 @@
 <?php
 
+define('__ROOT__', dirname(__DIR__));
+
+require_once(__ROOT__ .'/vendor/autoload.php');
+
+$dotenv = Dotenv\Dotenv::createImmutable(__ROOT__);
+$dotenv->load();
+
 use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
-const MYSQL_SERVER_HOST = 'db';
-const MYSQL_SERVER_PORT = '3306';
-const MYSQL_SERVER_DB = 'ps-store';
-const MYSQL_SERVER_USER = 'dev';
-const MYSQL_SERVER_PWD = 'dev';
 
 $port = $argv[1];
 Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
@@ -14,14 +16,13 @@ $http = new Swoole\HTTP\Server("0.0.0.0", $port);
 
 $mysql = new PDOPool(
     (new PDOConfig())
-        ->withHost(MYSQL_SERVER_HOST)
-        ->withPort(MYSQL_SERVER_PORT)
+        ->withHost($_ENV['DB_HOST'])
+        ->withPort($_ENV['DB_PORT'])
         // ->withUnixSocket('/tmp/mysql.sock')
-        ->withDbName(MYSQL_SERVER_DB)
-        ->withCharset('utf8mb4')
-        ->withUsername(MYSQL_SERVER_USER)
-        ->withPassword(MYSQL_SERVER_PWD));
-
+        ->withDbName($_ENV['DB_DATABASE'])
+        ->withCharset($_ENV['DB_CHARSET'])
+        ->withUsername($_ENV['DB_USER'])
+        ->withPassword($_ENV['DB_PASSWORD']));
 
 $http->on('start', function ($server) use ($port) {
     echo "Swoole http server is started at http://127.0.0.1:{$port}\n";
@@ -37,6 +38,7 @@ $http->on('request', function (\Swoole\Http\Request $request, \Swoole\Http\Respo
     }
 
     $result = $statement->fetchAll();
+
 
     var_dump($result);
 
