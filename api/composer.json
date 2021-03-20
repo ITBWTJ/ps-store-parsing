@@ -1,0 +1,16 @@
+{   "name": "itbwtj/ps-store-parsing",
+    "description": "Pet project for parsing prices from PS Store and publish with Telegram Bot",
+    "require": {
+        "robmorgan/phinx": "^0.12.5",
+        "vlucas/phpdotenv": "^5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "PSStoreParsing\\": "src/",
+            "PSStoreParsing\\Exceptions\\": "src/exceptions/",
+            "PSStoreParsing\\Exceptions\\ApiStore\\": "src/exceptions/ApiStore/",
+            "PSStoreParsing\\DTO\\APIStoreParams\\": "src/DTO/APIStoreParams/",
+            "PSStoreParsing\\Services\\APIStore\\": "src/services/APIStore/"
+        }
+    }
+}
