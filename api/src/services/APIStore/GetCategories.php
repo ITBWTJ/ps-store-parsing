@@ -11,7 +11,7 @@ class GetCategories
     private Variables $variables;
     private Extensions $extensions;
 
-    private string $operationName = 'categoryGridRetrieve';
+    private string $operationName = 'getExperience';
     private string $commonPath = '/api/graphql/v1//op';
     private \Swoole\Coroutine\Http\Client $httpClient;
 
@@ -57,12 +57,15 @@ class GetCategories
         ];
     }
 
-    #[ArrayShape(['version' => "int", 'sha256Hash' => "string"])]
+
+    #[ArrayShape(['persistedQuery' => "array"])]
     private function getExtensionsParams(): array
     {
         return [
-            'version' => $this->extensions->getVersion(),
-            'sha256Hash' => $this->extensions->getHash(),
+            'persistedQuery' => [
+                'version' => $this->extensions->getVersion(),
+                'sha256Hash' => $this->extensions->getHash(),
+            ],
         ];
     }
 

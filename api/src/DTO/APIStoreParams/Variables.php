@@ -4,16 +4,16 @@ namespace PSStoreParsing\DTO\APIStoreParams;
 
 class Variables
 {
-    private int $clientId;
+    private string $clientId;
     private string $alias;
 
-    public function __construct(int $clientId, string $alias)
+    public function __construct(string $clientId, string $alias)
     {
         $this->clientId = $clientId;
         $this->alias = $alias;
     }
 
-    public function getClientId(): int
+    public function getClientId(): string
     {
         return $this->clientId;
     }

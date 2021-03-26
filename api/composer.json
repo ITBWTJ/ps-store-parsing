@@ -10,7 +10,12 @@
             "PSStoreParsing\\Exceptions\\": "src/exceptions/",
             "PSStoreParsing\\Exceptions\\ApiStore\\": "src/exceptions/ApiStore/",
             "PSStoreParsing\\DTO\\APIStoreParams\\": "src/DTO/APIStoreParams/",
-            "PSStoreParsing\\Services\\APIStore\\": "src/services/APIStore/"
+            "PSStoreParsing\\DTO\\APIStore\\Responses\\": "src/DTO/APIStore/responses/",
+            "PSStoreParsing\\Services\\APIStore\\": "src/services/APIStore/",
+            "PSStoreParsing\\Adapters\\APIStore\\": "src/adapters/APIStore/"
         }
+    },
+    "require-dev": {
+        "vimeo/psalm": "^4.6"
     }
 }
