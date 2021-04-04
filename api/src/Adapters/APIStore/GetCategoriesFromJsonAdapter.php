@@ -15,7 +15,7 @@ class GetCategoriesFromJsonAdapter
     /**
      * reporting name of component with categories
      */
-    const CHILD_VIEW_REPORTING_NAME = 'DEALSTOP';
+    const CHILD_VIEW_REPORTING_NAME = 'SS21HUBP2';
     const CATEGORY_LINK_TYPE = 'EMS_CATEGORY';
 
     public function __construct(string $jsonResponseFromApi)
@@ -47,7 +47,7 @@ class GetCategoriesFromJsonAdapter
         if (empty($childViews) || !is_array($childViews)) {
             throw new InvalidArgumentException('Empty or wrong type of childViews from api response');
         }
-
+        var_dump($childViews);
         foreach ($childViews as $childView) {
             if ($childView['reportingName'] === self::CHILD_VIEW_REPORTING_NAME) {
 

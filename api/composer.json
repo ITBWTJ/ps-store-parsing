@@ -2,20 +2,13 @@
     "description": "Pet project for parsing prices from PS Store and publish with Telegram Bot",
     "require": {
         "robmorgan/phinx": "^0.12.5",
-        "vlucas/phpdotenv": "^5.3"
+        "vlucas/phpdotenv": "^5.3",
+        "php-di/php-di": "^6.3",
+        "doctrine/annotations": "^1.12"
     },
     "autoload": {
         "psr-4": {
-            "PSStoreParsing\\": "src/",
-            "PSStoreParsing\\Exceptions\\": "src/exceptions/",
-            "PSStoreParsing\\Exceptions\\ApiStore\\": "src/exceptions/ApiStore/",
-            "PSStoreParsing\\DTO\\APIStoreParams\\": "src/DTO/APIStoreParams/",
-            "PSStoreParsing\\DTO\\APIStore\\Responses\\": "src/DTO/APIStore/responses/",
-            "PSStoreParsing\\Services\\APIStore\\": "src/services/APIStore/",
-            "PSStoreParsing\\Adapters\\APIStore\\": "src/adapters/APIStore/"
+            "PSStoreParsing\\": "src/"
         }
-    },
-    "require-dev": {
-        "vimeo/psalm": "^4.6"
     }
 }

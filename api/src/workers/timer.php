@@ -3,7 +3,9 @@
 use PSStoreParsing\DTO\APIStoreParams\{Extensions, Variables};
 use PSStoreParsing\Adapters\APIStore\GetCategoriesFromJsonAdapter;
 use PSStoreParsing\Exceptions\ApiStore\GetCategoriesException;
+use PSStoreParsing\Repositories\CategoryRepository;
 use PSStoreParsing\Services\APIStore\GetCategories;
+use PSStoreParsing\Singletones\Container;
 use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
 
@@ -11,34 +13,37 @@ define('__ROOT__', dirname(__DIR__, 2));
 define('__SRC__', dirname(__DIR__));
 
 require_once(__ROOT__ . '/vendor/autoload.php');
-var_dump(__ROOT__,__DIR__, dirname(__ROOT__));
-Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
-$dotenv = Dotenv\Dotenv::createImmutable(__ROOT__);
-$dotenv->load();
+require_once (__SRC__ . '/bootstrap/bootstrap.php');
 
-$mysql = new PDOPool(
-    (new PDOConfig())
-        ->withHost($_ENV['DB_HOST'])
-        ->withPort($_ENV['DB_PORT'])
-        // ->withUnixSocket('/tmp/mysql.sock')
-        ->withDbName($_ENV['DB_DATABASE'])
-        ->withCharset($_ENV['DB_CHARSET'])
-        ->withUsername($_ENV['DB_USER'])
-        ->withPassword($_ENV['DB_PASSWORD']));
-
+$mysql = Container::get(PDOPool::class);
 
 go(function () {
+    /** @var CategoryRepository $categoriesRepository */
+    $categoriesRepository = Container::get(CategoryRepository::class);
+    $allCategories = $categoriesRepository->all();
+    $categoriesById = [];
+
+    foreach ($allCategories as $category) {
+        $categoriesById[$category->getStoreId()] = $category;
+    }
+
     $HTTPClient = new Swoole\Coroutine\Http\Client($_ENV['PS_STORE_DOMAIN'], 443, true);
-    $variables = new Variables($_ENV['PS_STORE_API_CLIENT_ID'],$_ENV['PS_STORE_API_ALIAS']);
-    $extensions = new Extensions($_ENV['PS_STORE_API_VERSION'],$_ENV['PS_STORE_API_HASH']);
-    $getCategories = new GetCategories($HTTPClient, $variables, $extensions);
+    $getCategories = new GetCategories($HTTPClient, Container::get(Variables::class), Container::get(Extensions::class));
 
     try {
         $result = $getCategories->get();
-        var_dump($result);
+
         $categoriesAdapter = new GetCategoriesFromJsonAdapter($result);
         $categories = $categoriesAdapter->getCategories();
-        var_dump($categories);
+
+        foreach ($categories as $category) {
+            if (empty($categoriesById[$category->getId()])) {
+                $categoryModel = $categoriesRepository->createFromDTO($category);
+
+                var_dump($categoryModel);
+            }
+        }
+
     } catch (GetCategoriesException $e) {
         var_dump('PS STORE EXCEPTION ' . $e->getMessage());
     } catch (\PSStoreParsing\Exceptions\ApiStore\InvalidArgumentException $e) {
@@ -49,5 +54,5 @@ go(function () {
 });
 
 Swoole\Timer::tick(5000, function ($timerid, $param) use ($mysql) {
-
+    var_dump('tick');
 }, ['params1', 'params2']);

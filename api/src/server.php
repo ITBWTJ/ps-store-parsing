@@ -29,7 +29,6 @@ $http->on('start', function ($server) use ($port) {
 });
 
 $http->on('request', function (\Swoole\Http\Request $request, \Swoole\Http\Response $response) use ($mysql){
-
     $PDOClient = $mysql->get();
     $statement = $PDOClient->prepare('SELECT * FROM games');
 
