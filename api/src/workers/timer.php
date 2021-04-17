@@ -22,9 +22,12 @@ go(function () {
     $allCategories = $categoriesRepository->all();
     $categoriesById = [];
 
-    foreach ($allCategories as $category) {
-        $categoriesById[$category->getStoreId()] = $category;
+    if (!empty($allCategories)) {
+        foreach ($allCategories as $category) {
+            $categoriesById[$category->getStoreId()] = $category;
+        }
     }
+
 
     $HTTPClient = new Swoole\Coroutine\Http\Client($_ENV['PS_STORE_DOMAIN'], 443, true);
     $getCategories = new GetCategories($HTTPClient, Container::get(GetCategoriesVariables::class), Container::get(Extensions::class));

@@ -49,9 +49,23 @@ class ProductRepository
 
         $data = $this->DTOToArrayFields($DTO);
 
+        var_dump($sql, $data);
         $sth->execute($data);
 
         $data['id'] = $this->client->lastInsertId();
+
+        return $this->getModel($data);
+    }
+
+    public function updateFromDTO(Product $model, ProductDTO $DTO): Product
+    {
+        $sql = $this->getInsertIntoSQL();
+        $sth = $this->client->prepare($sql);
+
+        $data = $this->DTOToArrayFields($DTO);
+        $data['id'] = $model->getId();
+
+        $sth->execute($data);
 
         return $this->getModel($data);
     }
@@ -67,7 +81,6 @@ class ProductRepository
         return $models;
     }
 
-    #[Pure]
     private function getModel(array $modelData): Product
     {
         return new Product(
@@ -79,7 +92,9 @@ class ProductRepository
             discountedPrice: $modelData['discounted_price'],
             endTime: $modelData['end_time'],
             imageUrl: $modelData['image_url'],
-            isExclusive: $modelData['is_exclusive']
+            isExclusive: $modelData['is_exclusive'],
+            platforms: !empty($modelData['platforms']) ? json_decode($modelData['platforms'], true) : [],
+            concept: $modelData['concept'],
         );
     }
 
@@ -93,6 +108,7 @@ class ProductRepository
         'is_exclusive' => "bool",
         'end_time' => "int|null",
         'platforms' => "string",
+        'concept' => 'string|null'
     ])]
     private function DTOToArrayFields(ProductDTO $DTO): array
     {
@@ -105,7 +121,8 @@ class ProductRepository
             'discounted_price' => $DTO->getDiscountedPrice(),
             'is_exclusive' => (int)$DTO->isExclusive(),
             'end_time' => $DTO->getEndTime(),
-            'platforms' => json_encode($DTO->getPlatforms(), JSON_THROW_ON_ERROR)
+            'platforms' => json_encode($DTO->getPlatforms(), JSON_THROW_ON_ERROR),
+            'concept' => $DTO->getConcept(),
         ];
     }
 
@@ -121,7 +138,26 @@ class ProductRepository
             `end_time` = :end_time,
             `image_url` = :image_url,
             `is_exclusive` = :is_exclusive,
-            `platforms` = :platforms
+            `platforms` = :platforms,
+            `concept` = :consept
+SQL;
+    }
+
+    private function getUpdateSQL(): string
+    {
+        return <<<'SQL'
+            UPDATE `games` SET
+                `store_id` = :store_id,
+                `name` = :name,
+                `type` = :type,
+                `base_price` = :base_price,
+                `discounted_price` = :discounted_price,
+                `end_time` = :end_time,
+                `image_url` = :image_url,
+                `is_exclusive` = :is_exclusive,
+                `platforms` = :platforms,
+                `concept` = :consept
+            WHERE `id` = :id
 SQL;
     }
 }

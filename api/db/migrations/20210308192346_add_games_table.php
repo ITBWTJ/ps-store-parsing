@@ -24,6 +24,7 @@ final class AddGamesTable extends AbstractMigration
             ->addColumn('is_exclusive', MysqlAdapter::PHINX_TYPE_BOOLEAN, ['null' => false, 'default' => false])
             ->addColumn('platforms', MysqlAdapter::PHINX_TYPE_JSON, ['null' => true])
             ->addColumn('image_url', MysqlAdapter::PHINX_TYPE_STRING, ['null' => true])
+            ->addColumn('concept', MysqlAdapter::PHINX_TYPE_STRING, ['null' => true])
             ->addColumn('deleted_at', MysqlAdapter::PHINX_TYPE_TIMESTAMP, ['null' => true])
             ->addColumn('created_at', MysqlAdapter::PHINX_TYPE_TIMESTAMP, ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('updated_at', MysqlAdapter::PHINX_TYPE_TIMESTAMP,

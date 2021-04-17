@@ -14,6 +14,7 @@ class Product
         private ?string $imageUrl = null,
         private ?int $endTime = null,
         private array $platforms = [],
+        private ?string $concept = null,
     )
     {}
 
@@ -87,6 +88,14 @@ class Product
     public function getPlatforms(): array
     {
         return $this->platforms;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getConcept(): ?string
+    {
+        return $this->concept;
     }
 
 
