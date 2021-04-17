@@ -10,14 +10,14 @@ class Category
         private int $id,
         private string $name,
         private string $storeId,
-        private string $imageUrl,
+        private ?string $imageUrl,
         private string $linkTarget
     ) {}
 
     /**
      * @return string
      */
-    public function getImageUrl(): string
+    public function getImageUrl(): ?string
     {
         return $this->imageUrl;
     }

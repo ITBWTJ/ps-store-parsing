@@ -38,7 +38,6 @@ $http->on('request', function (\Swoole\Http\Request $request, \Swoole\Http\Respo
 
     $result = $statement->fetchAll();
 
-
     var_dump($result);
 
     $HTTPClient = new Swoole\Coroutine\Http\Client('jsonplaceholder.typicode.com');

@@ -4,7 +4,7 @@ namespace PSStoreParsing\Exceptions\ApiStore;
 
 use JetBrains\PhpStorm\Pure;
 
-class GetCategoriesException extends \Exception
+class GetDataException extends \Exception
 {
     #[Pure]
     public function __construct($message = "", $code = 0, Throwable $previous = null)

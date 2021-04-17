@@ -4,7 +4,7 @@ namespace PSStoreParsing\DTO\APIStoreParams;
 
 use DI\Annotation\Inject;
 
-class Variables
+class GetCategoriesVariables implements IVariables
 {
     private string $clientId;
     private string $alias;

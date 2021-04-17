@@ -5,18 +5,13 @@ namespace PSStoreParsing\Adapters\APIStore;
 use PSStoreParsing\DTO\APIStore\Responses\Category;
 use PSStoreParsing\Exceptions\ApiStore\InvalidArgumentException;
 
-class GetCategoriesFromJsonAdapter
+class GetCategoriesFromJsonAdapter implements IGetDataFromJsonAdapter
 {
-
     private string $jsonResponseFromApi;
     private array $responseFromApi;
     private array $categories = [];
 
-    /**
-     * reporting name of component with categories
-     */
-    const CHILD_VIEW_REPORTING_NAME = 'SS21HUBP2';
-    const CATEGORY_LINK_TYPE = 'EMS_CATEGORY';
+    private const CATEGORY_LINK_TYPE = 'EMS_CATEGORY';
 
     public function __construct(string $jsonResponseFromApi)
     {
@@ -47,34 +42,35 @@ class GetCategoriesFromJsonAdapter
         if (empty($childViews) || !is_array($childViews)) {
             throw new InvalidArgumentException('Empty or wrong type of childViews from api response');
         }
-        var_dump($childViews);
-        foreach ($childViews as $childView) {
-            if ($childView['reportingName'] === self::CHILD_VIEW_REPORTING_NAME) {
 
+        foreach ($childViews as $childView) {
+//            if ($childView['reportingName'] === self::CHILD_VIEW_REPORTING_NAME) {
                 if (empty($childView['components']) || !is_array($childView['components'])) {
-                    throw new InvalidArgumentException('Empty or wrong type of childView.components from api response');
+                    continue;
+//                    throw new InvalidArgumentException('Empty or wrong type of childView.components from api response');
                 }
 
                 foreach ($childView['components'] as $component) {
                     if (!empty($component['link']['type']) && $component['link']['type'] === self::CATEGORY_LINK_TYPE) {
                         $this->categories[] = new Category(
                             $component['id'],
-                            $component['imageUrl'],
+                            $component['imageUrl'] ?? null,
                             $component['link']['target'],
                             $component['name']
-                        );;
+                        );
                     }
                 }
-            }
+//            }
         }
 
 
     }
 
+
     /**
-     * @return Category[]
+     * @return array
      */
-    public function getCategories(): array
+    public function getData(): array
     {
         return $this->categories;
     }

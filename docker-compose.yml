@@ -10,6 +10,8 @@ services:
       MYSQL_PASSWORD: dev
     ports:
       - "3306:3306"
+    volumes:
+    - ./db/mysql:/var/lib/mysql
   api:
     build:
       context: ./

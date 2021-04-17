@@ -19,7 +19,7 @@ return [
     'ps-store.api-client-id' => $_ENV['PS_STORE_API_CLIENT_ID'],
     'ps-store.api-alias' => $_ENV['PS_STORE_API_ALIAS'],
     'ps-store.api-version' => (int)$_ENV['PS_STORE_API_VERSION'],
-    'ps-store.api-hash' => $_ENV['PS_STORE_API_HASH'],
+    'ps-store.api-hash' => $_ENV['PS_STORE_API_CATEGORIES_HASH'],
 
 
     PDOPool::class => function (PDOConfig $PDOConfig) {

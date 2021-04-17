@@ -6,7 +6,7 @@ class Category
 {
     public function __construct(
         private string $id,
-        private string $imageUrl,
+        private ?string $imageUrl,
         private string $linkTarget,
         private string $name,
     )
@@ -32,7 +32,7 @@ class Category
     /**
      * @return string
      */
-    public function getImageUrl(): string
+    public function getImageUrl(): ?string
     {
         return $this->imageUrl;
     }

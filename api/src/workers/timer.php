@@ -1,12 +1,11 @@
 <?php
 
-use PSStoreParsing\DTO\APIStoreParams\{Extensions, Variables};
+use PSStoreParsing\DTO\APIStoreParams\{Extensions, GetCategoriesVariables};
 use PSStoreParsing\Adapters\APIStore\GetCategoriesFromJsonAdapter;
-use PSStoreParsing\Exceptions\ApiStore\GetCategoriesException;
+use PSStoreParsing\Exceptions\ApiStore\GetDataException;
 use PSStoreParsing\Repositories\CategoryRepository;
 use PSStoreParsing\Services\APIStore\GetCategories;
 use PSStoreParsing\Singletones\Container;
-use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
 
 define('__ROOT__', dirname(__DIR__, 2));
@@ -28,23 +27,23 @@ go(function () {
     }
 
     $HTTPClient = new Swoole\Coroutine\Http\Client($_ENV['PS_STORE_DOMAIN'], 443, true);
-    $getCategories = new GetCategories($HTTPClient, Container::get(Variables::class), Container::get(Extensions::class));
+    $getCategories = new GetCategories($HTTPClient, Container::get(GetCategoriesVariables::class), Container::get(Extensions::class));
 
     try {
         $result = $getCategories->get();
 
         $categoriesAdapter = new GetCategoriesFromJsonAdapter($result);
-        $categories = $categoriesAdapter->getCategories();
+        $categories = $categoriesAdapter->getData();
 
-        foreach ($categories as $category) {
-            if (empty($categoriesById[$category->getId()])) {
-                $categoryModel = $categoriesRepository->createFromDTO($category);
+        foreach ($categories as $categoryDTO) {
+            if (empty($categoriesById[$categoryDTO->getId()])) {
+                $model = $categoriesRepository->createFromDTO($categoryDTO);
 
-                var_dump($categoryModel);
+                $categoriesById[$model->getStoreId()] = $model;
             }
         }
 
-    } catch (GetCategoriesException $e) {
+    } catch (GetDataException $e) {
         var_dump('PS STORE EXCEPTION ' . $e->getMessage());
     } catch (\PSStoreParsing\Exceptions\ApiStore\InvalidArgumentException $e) {
         var_dump('PARSE CATEGORIES EXCEPTION ' . $e->getMessage());
