@@ -1,22 +1,11 @@
 <?php
 
-use PSStoreParsing\DTO\APIStoreParams\{Extensions,
-    GetCategoriesVariables,
-    GetProductByIdVariables,
-    GetProductsByCategoryVariables
-};
-use PSStoreParsing\Adapters\APIStore\GetCategoriesFromJsonAdapter;
+use PSStoreParsing\DTO\APIStoreParams\{Extensions,GetProductByIdVariables};
 use PSStoreParsing\Adapters\APIStore\GetProductFromJsonAdapter;
-use PSStoreParsing\Adapters\APIStore\GetProductsFromJsonAdapter;
-use PSStoreParsing\Exceptions\ApiStore\GetCategoriesException;
 use PSStoreParsing\Exceptions\ApiStore\GetDataException;
-use PSStoreParsing\Repositories\CategoryRepository;
 use PSStoreParsing\Repositories\ProductRepository;
-use PSStoreParsing\Services\APIStore\GetCategories;
 use PSStoreParsing\Services\APIStore\GetProductById;
-use PSStoreParsing\Services\APIStore\GetProductsByCategory;
 use PSStoreParsing\Singletones\Container;
-use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
 
 define('__ROOT__', dirname(__DIR__, 2));
@@ -27,14 +16,13 @@ require_once(__SRC__ . '/bootstrap/bootstrap.php');
 
 $mysql = Container::get(PDOPool::class);
 
-go(static function () {
+$updateProducts = static function () {
     /** @var ProductRepository $productsRepository */
     $productsRepository = Container::get(ProductRepository::class);
 
     $allProducts = $productsRepository->all();
 
     $HTTPClient = new Swoole\Coroutine\Http\Client($_ENV['PS_STORE_DOMAIN'], 443, true);
-
 
     if (!empty($allProducts) && is_array($allProducts)) {
         foreach ($allProducts as $product) {
@@ -49,20 +37,32 @@ go(static function () {
                 $productsDTO = $productAdapter->getData();
 
                 if (!empty($productsDTO[0])) {
-                    $model = $productsRepository->createFromDTO($productsDTO[0]);
+                    $DTO = $productsDTO[0];
+                    $product
+                        ->setName($DTO->getName())
+                        ->setBasePrice($DTO->getBasePrice())
+                        ->setDiscountedPrice($DTO->getDiscountedPrice())
+                        ->setIsExclusive($DTO->isExclusive())
+                        ->setConcept($DTO->getConcept())
+                        ->setEndTime($DTO->getEndTime());
+
+                    $productsRepository->update($product);
+                    var_dump('update product');
                 }
             } catch (GetDataException $e) {
                 var_dump('PS STORE EXCEPTION ' . $e->getMessage());
             } catch (\PSStoreParsing\Exceptions\ApiStore\InvalidArgumentException $e) {
                 var_dump('PARSE PRODUCTS EXCEPTION ' . $e->getMessage());
             } catch (\Exception $e) {
-                var_dump('TIMER GET CATEGORIES EXCEPTION ' . $e->getMessage());
+                var_dump('TIMER UPDATE PRODUCTS EXCEPTION ' . $e->getMessage());
             }
         }
     }
 
-});
+};
 
 Swoole\Timer::tick(5000, function ($timerid, $param) use ($mysql) {
-    var_dump('tick get products');
+    var_dump('tick update products');
 }, ['params1', 'params2']);
+
+Swoole\Timer::after(30000, $updateProducts);

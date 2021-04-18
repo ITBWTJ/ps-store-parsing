@@ -25,7 +25,7 @@ apps:
       DEBUG_MODE: true
       SERVER_ENV: development
       CONFIG_PATH: /var/www/ps-store/configs/api.config.yaml
-  - script: ./src/workers/timer.php
+  - script: ./src/workers/getCategories.php
     name: worker1
     interpreter: php
     max_memory_restart: '1000M'
@@ -38,6 +38,18 @@ apps:
       SERVER_ENV: development
       CONFIG_PATH: /var/www/ps-store/configs/api.config.yaml
   - script: ./src/workers/getProducts.php
+    name: worker2
+    interpreter: php
+    max_memory_restart: '1000M'
+    watch: true
+    ignore_watch: ['logs', '.DS_Store', 'db', 'composer.*', 'vendor', 'storage', 'static']
+    error_file: './logs/pm2/pm2-error-logs.log'
+    out_file: './logs/pm2/pm2-out-logs.log'
+    env:
+      DEBUG_MODE: true
+      SERVER_ENV: development
+      CONFIG_PATH: /var/www/ps-store/configs/api.config.yaml
+  - script: ./src/workers/updateProducts.php
     name: worker2
     interpreter: php
     max_memory_restart: '1000M'

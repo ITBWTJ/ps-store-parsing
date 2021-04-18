@@ -45,20 +45,20 @@ class GetProductFromJsonAdapter implements IGetDataFromJsonAdapter
             throw new InvalidArgumentException('Empty or wrong type of products from api response');
         }
 
-        if (empty($product['webcast'][0])) {
-            throw new GetDataException('Empty webcast for product: ' . $product['id']);
+        if (empty($product['webctas'][0])) {
+            throw new GetDataException('Empty webctas for product: ' . $product['id']);
         }
 
-        $webcast = $product['webcast'][0];
+        $webctas = $product['webctas'][0];
 
         $this->data[] = new Product(
             id: $product['id'],
             name: $product['name'],
             type: $product['skus'][0]['name'],
-            basePrice: $this->convertStringPriceToInt($webcast['price']['basePrice']),
-            discountedPrice: $this->convertStringPriceToInt($webcast['price']['discountedPrice']),
-            isExclusive: (bool)$webcast['price']['isExclusive'],
-            endTime: (int)$webcast['price']['endTime'],
+            basePrice: $this->convertStringPriceToInt($webctas['price']['basePrice']),
+            discountedPrice: $this->convertStringPriceToInt($webctas['price']['discountedPrice']),
+            isExclusive: (bool)$webctas['price']['isExclusive'],
+            endTime: $this->convertToSeconds($webctas['price']['endTime']),
             concept: $product['concept']['id'],
         );
 
@@ -75,5 +75,14 @@ class GetProductFromJsonAdapter implements IGetDataFromJsonAdapter
     private function convertStringPriceToInt(string $price): int
     {
         return (int)str_replace([' ', '.', 'UAH'], '', $price);
+    }
+
+    private function convertToSeconds(?string $miliseconds): ?int
+    {
+        if ($miliseconds) {
+            return ((int)$miliseconds) / 1000;
+        }
+
+        return null;
     }
 }

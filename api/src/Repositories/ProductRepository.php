@@ -49,7 +49,6 @@ class ProductRepository
 
         $data = $this->DTOToArrayFields($DTO);
 
-        var_dump($sql, $data);
         $sth->execute($data);
 
         $data['id'] = $this->client->lastInsertId();
@@ -57,12 +56,12 @@ class ProductRepository
         return $this->getModel($data);
     }
 
-    public function updateFromDTO(Product $model, ProductDTO $DTO): Product
+    public function update(Product $model): Product
     {
-        $sql = $this->getInsertIntoSQL();
+        $sql = $this->getUpdateSQL();
         $sth = $this->client->prepare($sql);
 
-        $data = $this->DTOToArrayFields($DTO);
+        $data = $model->toArray();
         $data['id'] = $model->getId();
 
         $sth->execute($data);
@@ -81,6 +80,7 @@ class ProductRepository
         return $models;
     }
 
+    #[Pure]
     private function getModel(array $modelData): Product
     {
         return new Product(
@@ -139,7 +139,7 @@ class ProductRepository
             `image_url` = :image_url,
             `is_exclusive` = :is_exclusive,
             `platforms` = :platforms,
-            `concept` = :consept
+            `concept` = :concept
 SQL;
     }
 
@@ -147,16 +147,16 @@ SQL;
     {
         return <<<'SQL'
             UPDATE `games` SET
-                `store_id` = :store_id,
-                `name` = :name,
-                `type` = :type,
-                `base_price` = :base_price,
-                `discounted_price` = :discounted_price,
-                `end_time` = :end_time,
-                `image_url` = :image_url,
-                `is_exclusive` = :is_exclusive,
-                `platforms` = :platforms,
-                `concept` = :consept
+            `store_id` = :store_id,
+            `name` = :name,
+            `type` = :type,
+            `base_price` = :base_price,
+            `discounted_price` = :discounted_price,
+            `end_time` = :end_time,
+            `image_url` = :image_url,
+            `is_exclusive` = :is_exclusive,
+            `platforms` = :platforms,
+            `concept` = :concept
             WHERE `id` = :id
 SQL;
     }
